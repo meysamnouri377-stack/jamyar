@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1a0b2e">
+  <title>جمع‌یار | بازی دورهمی خفن</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lalezar&family=Vazirmatn:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #1a0b2e; --panel: #281448; --panel2: #351c5e; --text: #ffffff;
+      --muted: #d0bfff; --yellow: #ffd60a; --green: #00f5d4; --red: #ff3366;
+      --border: #4d2b82; --accent: #9b5de5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh;
+      background: radial-gradient(circle at top right, #4a148c 0, transparent 40%), radial-gradient(circle at bottom left, #31104e 0, transparent 40%), var(--bg);
+      color: var(--text); font-family: 'Vazirmatn', sans-serif; line-height: 1.7; padding: 10px;
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; transition: transform 0.15s ease, filter 0.2s; }
+    button:active { transform: scale(0.95); }
+    button:disabled { opacity: .45; cursor: not-allowed; transform: none !important; }
+
+    .wrap { width: min(100% - 16px, 520px); margin: auto; padding-bottom: 40px; position: relative; }
+    
+    /* دکمه موزیک شناور */
+    .music-btn {
+      position: absolute; top: 15px; left: 15px;
+      background: var(--panel2); border: 2px solid var(--border);
+      color: var(--yellow); padding: 8px 14px; border-radius: 50px;
+      font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 6px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 10;
+    }
+
+    header { text-align: center; padding: 25px 0 15px; }
+    h1 { 
+      margin: 0; color: var(--yellow); font-family: 'Lalezar', cursive; font-size: 38px; 
+      text-shadow: 0 4px 15px rgba(255, 214, 10, 0.3); letter-spacing: 1px;
+    }
+    header p { margin: 5px 0 0; color: var(--muted); font-size: 15px; font-weight: 600; }
+
+    .panel {
+      background: var(--panel); border: 2px solid var(--border); border-radius: 26px;
+      padding: 22px; margin: 15px 0; box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+      position: relative; overflow: hidden;
+    }
+
+    h2 { margin: 0 0 14px; font-size: 20px; font-family: 'Lalezar', cursive; color: var(--yellow); }
+    .small { font-size: 13px; color: var(--muted); margin-top: 8px; }
+    .row { display: flex; gap: 10px; align-items: center; }
+    .row > input { flex: 1; min-width: 0; }
+
+    input, select {
+      background: #190a33; color: var(--text); border: 2px solid var(--border);
+      border-radius: 16px; padding: 12px 16px; outline: none; font-weight: 600;
+    }
+
+    .btn {
+      border: 0; border-radius: 16px; padding: 13px 18px; font-weight: 800;
+      font-family: 'Lalezar', cursive; font-size: 18px; color: #1a0b2e; background: var(--yellow);
+    }
+    .btn.green { background: var(--green); color: #0a2e24; }
+    .btn.red { background: var(--red); color: #fff; }
+    .btn.ghost { background: var(--panel2); color: var(--text); border: 2px solid var(--border); }
+    .full { width: 100%; margin-top: 15px; }
+
+    .player, .score {
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      background: var(--panel2); padding: 11px 16px; border-radius: 16px; margin-top: 8px;
+    }
+    .score.active { border: 2px solid var(--yellow); background: #3d216f; }
+    
+    .remove { border: 0; background: transparent; color: var(--red); font-size: 24px; cursor: pointer; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+    .chip {
+      border: 2px solid var(--border); background: var(--panel2); color: var(--muted);
+      padding: 9px 15px; border-radius: 999px; font-weight: 600; font-size: 14px;
+    }
+    .chip.on { background: #7209b7; color: #fff; border-color: var(--yellow); }
+
+    .card {
+      text-align: center; padding: 35px 20px; margin: 15px 0;
+      background: linear-gradient(145deg, #3c1a6e, #240e45); border: 2px solid var(--accent); border-radius: 28px;
+    }
+    .category { color: var(--yellow); font-family: 'Lalezar', cursive; font-size: 22px; }
+    .challenge { font-size: 22px; font-weight: 700; min-height: 130px; display: flex; align-items: center; justify-content: center; }
+    .timer { font-size: 32px; font-weight: 800; font-family: 'Lalezar'; color: var(--green); margin: 10px 0; }
+    .timer.over { color: var(--red); }
+
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+    .hidden { display: none !important; }
+    .center { text-align: center; }
+    .winner { font-size: 26px; color: var(--yellow); font-family: 'Lalezar'; margin: 15px 0; }
+
+    /* استایل‌های اختصاصی سیستم خرید */
+    .premium-banner { margin-top: 16px; padding: 16px; border-radius: 19px; background: linear-gradient(135deg, #432064, #25133e); border: 1px solid #ffd60a; text-align: center; }
+    .paywall { position: fixed; inset: 0; background: rgba(8, 5, 21, .85); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 1000; }
+    .paywall-card { width: min(100%, 420px); background: #211039; border: 2px solid #ffd60a; border-radius: 26px; padding: 24px; text-align: center; }
+  </style>
+</head>
+<body>
+
+<audio id="bgMusic" loop>
+  <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf7f6.mp3" type="audio/mpeg">
+</audio>
+
+<div class="wrap">
+  <button class="music-btn" onclick="toggleMusic()">🎵 موزیک</button>
+
+  <header>
+    <h1>🎉 جمع‌یار</h1>
+    <p>یک گوشی، چند دوست، کلی لحظه بامزه!</p>
+  </header>
+
+  <section id="setup">
+    <div class="panel">
+      <h2>۱. اسامی بچه‌ها</h2>
+      <div class="row">
+        <input id="nameInput" maxlength="24" placeholder="اسم بازیکن...">
+        <button class="btn" id="addBtn">➕</button>
+      </div>
+      <div id="playerList"></div>
+    </div>
+
+    <div class="panel">
+      <h2>۲. موضوع‌های بازی</h2>
+      <div id="categories" class="chips"></div>
+      
+      <!-- بنر خرید -->
+      <div class="premium-banner" id="premiumBanner">
+        <strong id="bannerTitle" style="color:var(--yellow)">✨ ۱۰۰۰ چالش در نسخه کامل</strong>
+        <p id="bannerDesc" class="small">همه موضوع‌ها را با یک خرید همیشگی باز کن.</p>
+        <button class="btn full" onclick="openPaywall()">باز کردن نسخه کامل 👑</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>۳. تنظیمات</h2>
+      <select id="duration" style="width: 100%; margin-bottom: 12px;">
+        <option value="30">⏱️ ۳۰ ثانیه</option>
+        <option value="45">⏱️ ۴۵ ثانیه</option>
+        <option value="60">⏱️ ۶۰ ثانیه</option>
+      </select>
+      <button class="btn green full" id="startBtn">شروع بازی! 🚀</button>
+      <p id="setupError" class="small center" style="color: var(--red); font-weight: bold;"></p>
+    </div>
+  </section>
+
+  <section id="game" class="hidden">
+    <div class="panel">
+      <div style="display:flex; justify-content:space-between; color:var(--muted); font-size:14px; margin-bottom:10px;">
+        <span id="turnLabel" style="font-size: 18px; color: var(--yellow); font-family: 'Lalezar';"></span>
+        <span id="progressLabel"></span>
+      </div>
+      <div class="card">
+        <div id="categoryLabel" class="category"></div>
+        <div id="challengeLabel" class="challenge"></div>
+        <div id="timerLabel" class="timer"></div>
+      </div>
+      <div class="actions">
+        <button class="btn green" id="doneBtn">انجام شد ✅</button>
+        <button class="btn ghost" id="skipBtn">رد کردن ⏭️</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>🏆 امتیازها</h2>
+      <div id="scoreboard"></div>
+      <button class="btn red full" id="finishBtn">پایان و اعلام برنده 🏁</button>
+    </div>
+  </section>
+
+  <section id="result" class="panel center hidden">
+    <h2>👑 برنده نهایی</h2>
+    <div id="winnerLabel" class="winner"></div>
+    <div id="finalScores"></div>
+    <button class="btn green full" id="newGameBtn" style="margin-top: 20px;">بازی جدید 🔄</button>
+  </section>
+</div>
+
+<!-- پنجره پرداخت -->
+<div id="paywall" class="paywall hidden">
+  <div class="paywall-card">
+    <h2 style="font-size:28px">👑 ارتقا به نسخه کامل</h2>
+    <p>با خرید نسخه کامل، ۱۰۰۰ چالش خفن در ۱۰ دسته‌بندی برای همیشه باز می‌شود.</p>
+    <button class="btn full" onclick="handlePurchase()">باز کردن صفحه خرید بازار ✨</button>
+    <button class="btn ghost full" onclick="handleRestore()">بازیابی خرید قبلی 🔄</button>
+    <button class="btn ghost full" style="margin-top:10px; border:0" onclick="closePaywall()">انصراف</button>
+    <p id="payMessage" class="small" style="color:var(--green)"></p>
+  </div>
+</div>
+
+<script>
+  "use strict";
+
+  const PREMIUM_ID = "jamyar_full_v1";
+  const FREE_CATS = ["😂 خنده‌دار", "⚡ سرعت عمل"];
+  let premiumUnlocked = false;
+
+  // بانک چالش‌های مفهومی، هوشمند و بهینه‌شده برای دورهمی
+  const EXPANSIONS = {
+    "😂 خنده‌دار": { 
+      t: ["سوتی جلو فامیل شوهر/زن", "آخرین باری که بد ضایع شدی", "عجیب‌ترین خرید زندگیت", "مسخره‌ترین قانون خونه شما", "عجیب‌ترین فوبیایی که داری", "بدترین دروغی که برای پیچوندن گفتی", "خنده‌دارترین تصادف یا افتادنت", "بدترین کادویی که گرفتی", "عجیب‌ترین عادت قبل خوابت", "سوتی پیام اشتباه در تلگرام"], 
+      p: [
+        "ماجرای «{x}» رو طوری تعریف کن که همه باور کنن تقصیر {other} بوده!",
+        "درباره «{x}» طوری حرف بزن که انگار یک دستاورد علمی بزرگه!",
+        "یک بهانه غیرقابل‌رد برای «{x}» بیار و جمع رو قانع کن.",
+        "ماجرای «{x}» رو مثل تیتر اخبار حوادث ساعت ۱۴ با هیجان گزارش کن.",
+        "فرض کن {other} درگیر «{x}» شده؛ بهش یک راهکار خنده‌دار بده."
+      ] 
+    },
+    "⚡ سرعت عمل": { 
+      t: ["بهانه‌های فرار از کار", "ایرادهای مخفی خودت", "چیزهایی که تو تاریکی ترسناکن", "دلایل کات کردن", "کارهای غیرقانونی که همه انجام میدن", "چیزهایی که نمیشه با پول خرید", "دروغ‌های مؤدبانه روزمره", "وسایلی که همیشه گم میشن", "صفات مشترک بچه‌های این جمع", "کارهایی که هیچ‌وقت نباید تو آسانسور انجام داد"], 
+      p: [
+        "در کمتر از ۲۰ ثانیه، ۵ مورد از «{x}» نام ببر.",
+        "بدون اینکه مکث کنی یا 'اممم' بگی، ۴ تا از «{x}» ردیف کن.",
+        "۳ مورد از «{x}» بگو که مستقیماً به {other} ربط داشته باشه!",
+        "سریع ۵ مورد از «{x}» بگو، اما هرکدوم باید با یک حرف خاص شروع بشه.",
+        "در یک نفس، ۴ نمونه از «{x}» رو تند تند بگو."
+      ] 
+    },
+    "🎨 خلاقیت": { 
+      t: ["تاکسی پرنده بین‌شهری", "عینک ذهن‌خوان", "ساعت کنترل زمان", "قرص بی‌نیازی به خواب", "لباس نامرئی‌کننده", "مترجم زبان حیوانات خانگی", "ربات قضاوت‌کننده بحث‌ها", "آینه افشاگر حقیقت", "دستگاه ضبط خواب و رویا", "پاسپورت نامحدود جهانی"], 
+      p: [
+        "اگر «{x}» دست {other} بیفته، اولین سوءاستفاده‌ای که می‌کنه چیه؟",
+        "برای «{x}» یک خطر بزرگ که تو کاتالوگش نمی‌نویسن افشا کن!",
+        "یک قانون حقوقی سفت‌وسخت برای کنترل «{x}» وضع کن.",
+        "اگر «{x}» رو بهت بدن ولی در ازاش نصف حافظه‌ت پاک بشه، قبول می‌کنی؟ چرا؟",
+        "یک سناریوی دارک یا کمدی که ممکنه «{x}» ایجاد کنه تعریف کن."
+      ] 
+    },
+    "🎭 بازیگری": { 
+      t: ["مهمان سمجی که قصد رفتن نداره", "مشتری طلبکار در رستوران لوکس", "دکتری که خبر عجیبی رو آروم میگه", "مدافع حقوق حیوانات وسط کباب خوردن", "مأمور بازجویی از یک مظنون ساده‌لوح", "سلبریتی معروفی که مغروره", "راننده اسنپ پرحرف و فیلسوف", "کسی که پولش رو پس نمیده و به روت نمیاره", "راهنمای تور وسط گم شدن در جنگل", "نامزد پشیمان سر سفره عقد"], 
+      p: [
+        "نقش «{x}» رو بازی کن و {other} رو مخاطب مستقیمت قرار بده!",
+        "فقط با میمیک چهره و بدون صدا، حس «{x}» رو منتقل کن تا جمع حدس بزنن.",
+        "نقش «{x}» رو با لحن خیلی احساسی و اشک‌آلود اجرا کن.",
+        "فرض کن «{x}» هستی و می‌خوای یک راز حیاتی رو به بقیه لو بدی.",
+        "یک دقیقه کامل در کاراکتر «{x}» با یکی از حاضرین بداهه‌پردازی کن."
+      ] 
+    },
+    "🤝 شناخت دوستان": { 
+      t: ["بخشیدن خیانت یا تحمل تنهایی", "شهرت جهانی بدون پول یا ثروت زیاد در گمنامی", "دونستن تاریخ مرگ خودت یا اطرافیان", "هرگز شکست نخوردن یا همیشه ماجراجو بودن", "حذف کامل گذشته یا تضمین یک آینده معمولی", "زیبایی بی‌نهایت بدون اعتمادبه‌نفس یا برعکس", "شغل موردعلاقه با حقوق کم یا شغل خسته‌کننده با پول پارو کردن", "وفاداری کورکورانه یا منطق بی‌رحمانه", "زندگی در یک جزیره رویایی تنها یا وسط یک شهر شلوغ با همه دوستان", "اعتراف علنی به یک راز شرم‌آور یا یک ماه زندان"], 
+      p: [
+        "صادقانه حدس بزن {other} بین «{x}» کدوم رو در عمق وجودش انتخاب می‌کنه؟",
+        "به نظرت بزرگ‌ترین ترس پنهان {other} در ارتباط با «{x}» چیه؟",
+        "اگر پای مصلحت وسط باشه، {other} در دوراهی «{x}» چطور عمل می‌کنه؟",
+        "یک رفتار یا ویژگی از {other} بگو که انتخابی که در مورد «{x}» داره رو توجیه کنه.",
+        "حدس بزن واکنش {other} در بدترین سناریوی مربوط به «{x}» چی خواهد بود."
+      ] 
+    },
+    "💬 خاطره و گفتگو": { 
+      t: ["بزرگ‌ترین درسی که با تاوان سنگین گرفتی", "روزی که حس کردی واقعاً بزرگ شدی", "آدمی که ناگهانی از زندگیت حذف شد", "تصمیمی که اگر برمی‌گشتی عوضش می‌کردی", "بهترین تعریفی که ازت شده و یادت نرفته", "لحظه‌ای که با تمام وجود احساس غرور کردی", "سخت‌ترین خداحافظی زندگیت", "حقیقت تلخی که خیلی دیر متوجهش شدی", "آرزویی از دوران کودکی که فراموش شد", "نقطه‌ای از زندگی که مسیرت رو ۱۸۰ درجه چرخوند"], 
+      p: [
+        "در ۲ دقیقه، چکیده عمیقی از احساست نسبت به «{x}» به جمع بگو.",
+        "مهم‌ترین ریشه‌ای که موضوع «{x}» روی شخصیت امروزت گذاشته چیه؟",
+        "اگر می‌تونستی به گذشته بری و به خودت درباره «{x}» پیام بدی، چی می‌گفتی؟",
+        "به نظرت کدوم یک از حاضرین این جمع بهتر می‌تونه حس تو رو درباره «{x}» بفهمه؟",
+        "یک حقیقت دست‌اول و شنیده‌نشده درباره «{x}» برای جمع رو کن."
+      ] 
+    },
+    "👥 گروهی": { 
+      t: ["نجات از یک کشتی در حال غرق با ۵ وسیله", "نوشتن مرام‌نامه اخلاقی این جمع", "حل یک معمای قتل مرموز در هتل", "توافق روی یک مقصد سفر با بودجه نامحدود", "انتخاب ۳ نفر از جمع برای زنده ماندن در پناهگاه آخرالزمانی", "طراحی یک اختراع ساده برای حل ترافیک", "تقسیم ارثیه خیالی ۱۰۰ میلیاردی بین کل جمع", "انتخاب یک ترانه که هویت مشترک این جمع باشه", "پیش‌بینی وضعیت تک‌تک بچه‌های جمع ۱۰ سال بعد", "تعیین قانون جدیدی که اگر کسی شکست باید برای همه بستنی بخره"], 
+      p: [
+        "کل جمع در ۳۰ ثانیه باید روی تصمیم‌گیری درباره «{x}» به اجماع کامل برسن!",
+        "دو دسته بشید؛ موافقان و مخالفان سرسخت درباره «{x}» مناظره کنن.",
+        "هر نفر از راست به چپ یک کلمه اضافه کنه تا داستانی حول «{x}» ساخته بشه.",
+        "به ترتیب همه باید بدون تکرار نظر، یک ایده برای «{x}» روی میز بذارن.",
+        "با رأی‌گیری اکثریت، رهبر جمع برای مدیریت بحران «{x}» رو انتخاب کنید."
+      ] 
+    },
+    "🔮 انتخاب‌های عجیب": { 
+      t: ["فهمیدن افکار پشت سرت در همین لحظه یا فراموشی کامل غم‌ها", "زندگی در گذشته با امکان تغییر آن یا رفتن به ۵۰۰ سال آینده", "جاودانگی به شرط تنها ماندن یا عمر ۵۰ ساله در اوج عشق و خوشبختی", "امکان حرف زدن با مرده‌ها یا تسلط کامل بر آینده جهان", "قدرت متوقف کردن زمان به قیمت پیر شدن سریع‌تر", "هرگز دروغ نشنیدن یا هرگز اشتباه نکردن", "داشتن همه کتاب‌های دنیا در ذهن یا داشتن جذاب‌ترین صدا در جهان", "زندگی بدون حس درد فیزیکی یا زندگی بدون احساس ترس", "مجبور بودن به گفتن تمام افکارت با صدای بلند یا سکوت مطلق ابدی", "داشتن یک دوست معتمد واقعی یا ثروتی که هیچ‌وقت تموم نمیشه"], 
+      p: [
+        "اگر فقط یک دقیقه وقت داشته باشی، بین گزینه‌های «{x}» کدوم رو انتخاب می‌کنی و چرا؟",
+        "به نظرت بدترین پیامدی که انتخابِ گزینه اول در «{x}» داره چیه؟",
+        "اگر این انتخاب رو برای {other} تعیین می‌کردی، کدوم رو مجبورش می‌کردی بپذیره؟",
+        "توجیه اخلاقی خودت برای فرار از سناریوی تاریک در «{x}» چیه؟",
+        "کدوم یکی از گزینه‌های «{x}» روح انسان رو در درازمدت نابود می‌کنه؟"
+      ] 
+    },
+    "🎬 سینما و داستان": { 
+      t: ["کارآگاهی که قاتل خودش بوده و فراموش کرده", "دزدی که در آخرین سرقت عاشق قربانی میشه", "دنیایی که لبخند زدن در اون جرم سنگینه", "هوش مصنوعی که پی به بی‌معنایی انسان‌ها می‌بره", "مسافری که در یک حلقه زمانی یک روز تکراری گیر افتاده", "فروشگاهی که سال‌های عمر افراد رو در ازای کالا می‌خره", "پدری که سال‌ها بعد متوجه میشه بچه‌اش یک مامور مخفیه", "آخرین بازمانده زمین که صدایی از پشت در می‌شنوه", "روستایی که هر شب یکی از اهالی بدون ردپا غیب میشه", "پیام کوتاهی از آینده که می‌نویسه: فرار کن!"], 
+      p: [
+        "پایان این فیلم درباره «{x}» رو با یک پیچش داستانی (Plot Twist) شوکه‌کننده بگو.",
+        "اگر {other} نقش منفی این داستان درباره «{x}» باشه، چه ویژگی منحصر‌به‌فردی داره؟",
+        "دیالوگ طلایی سکانس اوج این فیلم با موضوع «{x}» رو اجرا کن.",
+        "یک اسم خفن، جذاب و سینمایی برای این فیلمِ «{x}» بگو.",
+        "پوستر این فیلم رو با کلمات توصیف کن؛ چه نمادی در مرکز تصویره؟"
+      ] 
+    },
+    "🎵 موسیقی و ریتم": { 
+      t: ["ریتم ضربان قلب زیر فشار استرس شدید", "موسیقی تیتراژ پایان یک فیلم غم‌انگیز", "صدای قدم زدن در یک عمارت متروکه", "ریتم یک تعقیب و گریز با ماشین‌های اسپورت", "آهنگ قهرمانی بعد از یک پیروزی سخت", "ملودی بیدار شدن در یک صبح برفی آرام", "صدای باران تند پشت پنجره اتاق نیمه‌تاریک", "سرود جنگی سربازان باستان قبل از حمله", "آهنگ تیتراژ کارتون نوستالژیک بچگی", "ریتم شمارش معکوس انفجار بمب"], 
+      p: [
+        "فقط با ضربه روی میز، ریتم و ضرباهنگ «{x}» رو برای جمع اجرا کن.",
+        "با دهان و صداهای بی‌معنی، بیت باکس یا ملودی «{x}» رو بساز.",
+        "برای سناریوی «{x}»، یک تک‌بیت یا مصرع شعر فی‌البداهه با ریتم بخون.",
+        "به نظرت در لحظه «{x}»، چه ساز موسیقیایی بیشترین حس رو منتقل می‌کنه؟",
+        "با کمک {other}، یک دوئت ریتمیک کوتاه برای «{x}» اجرا کنید."
+      ] 
+    }
+  };
+
+  const BANK = {};
+  const cards = [];
+  Object.entries(EXPANSIONS).forEach(([cat, data]) => {
+    BANK[cat] = [];
+    data.p.forEach(p => {
+      data.t.forEach(t => {
+        const text = p.replace("{x}", t);
+        BANK[cat].push(text);
+        cards.push({ id: cat + "-" + BANK[cat].length, category: cat, text });
+      });
+    });
+  });
+
+  const STORAGE_KEY = "jamyar_game_v1";
+  const allCategories = Object.keys(BANK);
+
+  let state = {
+    players: [], scores: [], enabled: ["😂 خنده‌دار", "⚡ سرعت عمل"],
+    duration: 45, used: [], turn: 0, currentId: null, otherIndex: null, mode: "setup"
+  };
+
+  const $ = id => document.getElementById(id);
+
+  function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+  function toggleMusic() {
+    const m = $("bgMusic");
+    m.paused ? m.play() : m.pause();
+  }
+
+  function renderPlayers() {
+    const c = $("playerList"); c.innerHTML = "";
+    state.players.forEach((n, i) => {
+      const div = document.createElement("div"); div.className = "player";
+      div.innerHTML = `<span>${i + 1}. ${n}</span><button class="remove" onclick="removePlayer(${i})">×</button>`;
+      c.appendChild(div);
+    });
+  }
+
+  window.removePlayer = i => { state.players.splice(i, 1); state.scores.splice(i, 1); save(); renderPlayers(); };
+
+  function renderCategories() {
+    const c = $("categories"); c.innerHTML = "";
+    allCategories.forEach(cat => {
+      const locked = !premiumUnlocked && !FREE_CATS.includes(cat);
+      const btn = document.createElement("button");
+      btn.className = "chip" + (state.enabled.includes(cat) ? " on" : "");
+      btn.textContent = locked ? `🔒 ${cat}` : cat;
+      btn.onclick = () => {
+        if(locked) return openPaywall();
+        state.enabled = state.enabled.includes(cat) ? state.enabled.filter(x => x !== cat) : [...state.enabled, cat];
+        save(); renderCategories();
+      };
+      c.appendChild(btn);
+    });
+  }
+
+  function openPaywall() { $("paywall").classList.remove("hidden"); $("payMessage").textContent = ""; }
+  function closePaywall() { $("paywall").classList.add("hidden"); }
+
+  function handlePurchase() {
+    if(window.JamyarBilling) window.JamyarBilling.purchase(PREMIUM_ID);
+    else $("payMessage").textContent = "در حال اتصال به بازار (مخصوص اپلیکیشن)";
+  }
+
+  function handleRestore() {
+    if(window.JamyarBilling) window.JamyarBilling.restore(PREMIUM_ID);
+    else $("payMessage").textContent = "در حال بررسی خرید (مخصوص اپلیکیشن)";
+  }
+
+  window.JamyarPremium = {
+    onEntitlement(r) { 
+      if(r.owned) {
+        premiumUnlocked = true; 
+        $("premiumBanner").classList.add("hidden"); 
+        renderCategories(); closePaywall();
+      }
+    }
+  };
+
+  let interval = null;
+  let secondsLeft = 45;
+
+  function startTimer() {
+    clearInterval(interval); secondsLeft = state.duration;
+    const l = $("timerLabel");
+    interval = setInterval(() => {
+      l.textContent = secondsLeft > 0 ? `⏳ ${secondsLeft} ثانیه` : "⏰ زمان تمام شد!";
+      l.classList.toggle("over", secondsLeft === 0);
+      if(secondsLeft <= 0) clearInterval(interval);
+      else secondsLeft--;
+    }, 1000);
+  }
+
+  function drawCard() {
+    const allowed = cards.filter(c => state.enabled.includes(c.category));
+    let av = allowed.filter(c => !state.used.includes(c.id));
+    if(!av.length) { state.used = []; av = allowed; }
+    const card = av[Math.floor(Math.random() * av.length)];
+    state.used.push(card.id); state.currentId = card.id;
+    const others = state.players.map((_, i) => i).filter(i => i !== state.turn % state.players.length);
+    state.otherIndex = others[Math.floor(Math.random() * others.length)];
+    save(); renderGame(); startTimer();
+  }
+
+  function renderGame() {
+    const card = cards.find(c => c.id === state.currentId);
+    if(!card) return;
+    $("turnLabel").textContent = `👤 نوبت: ${state.players[state.turn % state.players.length]}`;
+    $("categoryLabel").textContent = card.category;
+    $("challengeLabel").textContent = card.text.replace("{other}", state.players[state.otherIndex]);
+    renderScores("scoreboard", true);
+  }
+
+  function renderScores(id, active) {
+    const c = $(id); c.innerHTML = "";
+    state.players.forEach((n, i) => {
+      const div = document.createElement("div"); div.className = "score" + (active && i === state.turn % state.players.length ? " active" : "");
+      div.innerHTML = `<span>${n}</span><strong>${state.scores[i]} امتیاز</strong>`;
+      c.appendChild(div);
+    });
+  }
+
+  $("addBtn").onclick = () => {
+    const v = $("nameInput").value.trim();
+    if(v && state.players.length < 12) { state.players.push(v); state.scores.push(0); $("nameInput").value = ""; renderPlayers(); save(); }
+  };
+
+  $("startBtn").onclick = () => {
+    if(state.players.length < 2) return $("setupError").textContent = "حداقل ۲ نفر!";
+    if(!state.enabled.length) return $("setupError").textContent = "یک موضوع انتخاب کن!";
+    state.mode = "game"; state.turn = 0; drawCard(); showScreen();
+  };
+
+  function showScreen() {
+    $("setup").classList.toggle("hidden", state.mode !== "setup");
+    $("game").classList.toggle("hidden", state.mode !== "game");
+    $("result").classList.toggle("hidden", state.mode !== "result");
+    if(state.mode === "result") {
+      const max = Math.max(...state.scores);
+      const w = state.players.filter((_, i) => state.scores[i] === max);
+      $("winnerLabel").textContent = `🎉 برنده: ${w.join(" و ")}`;
+      renderScores("finalScores", false);
+    }
+  }
+
+  $("doneBtn").onclick = () => { state.scores[state.turn % state.players.length]++; state.turn++; drawCard(); };
+  $("skipBtn").onclick = () => { state.turn++; drawCard(); };
+  $("finishBtn").onclick = () => { state.mode = "result"; save(); showScreen(); };
+  $("newGameBtn").onclick = () => { state.mode = "setup"; state.turn = 0; state.scores = state.players.map(() => 0); save(); showScreen(); };
+
+  // مقداردهی اولیه
+  renderPlayers(); renderCategories(); showScreen();
+</script>
+</body>
+</html>
