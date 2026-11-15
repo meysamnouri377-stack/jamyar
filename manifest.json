@@ -1,0 +1,16 @@
+{
+  "name": "جمع‌یار",
+  "short_name": "Jamyar",
+  "description": "بازی دورهمی جمع‌یار",
+  "start_url": "index.html",
+  "display": "fullscreen",
+  "background_color": "#1a0b2e",
+  "theme_color": "#1a0b2e",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/color/512/000000/controller.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
